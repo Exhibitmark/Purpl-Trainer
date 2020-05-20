@@ -1,0 +1,90 @@
+{
+    "global":[
+        {
+            "name":"checkpoint",
+            "description":"Checkpoint",
+            "address":"1297AB8",
+            "reset":"0",
+            "value":"1"
+        },
+        {
+            "name":"revert",
+            "description":"Revert",
+            "address":"13164CC",
+            "reset":"0",
+            "value":"1"
+        },
+        {
+            "name":"skulls",
+            "description":"Skulls",
+            "address":"19A1580"
+        }
+    ],
+    "purpl":[
+        {
+            "name":"infiniteGrenades",
+            "description":"Infinite Grenades",
+            "address":"DA2A7F",
+            "reset":"0",
+            "value":"1"
+        },
+        {
+            "name":"hud",
+            "description":"HUD Toggle",
+            "address":"C79E31",
+            "reset":"0",
+            "value":"1"
+        },
+        {
+            "name":"godmode",
+            "description":"Permanent Shields",
+            "address":"D75C47",
+            "reset":"00F0",
+            "value":"0150"
+        },
+        {
+            "name":"bottomlessClip",
+            "description":"Bottomless Clip",
+            "address":"D4A5B6",
+            "reset":"84",
+            "value":"85"
+        },
+        {
+            "name":"wireframe",
+            "description":"Wireframe Mode",
+            "address":"12B2574",
+            "reset":"0",
+            "value":"1"
+        },
+        {
+            "name":"30tick",
+            "description":"30 Tick",
+            "address":"19A2F40",
+            "reset":"",
+            "value":""
+        }
+    ],
+    "packs": [
+        {
+            "name":"Debug",
+            "skulls":[],
+            "mods":["infiniteGrenades","hud"]
+        },
+        {
+            "name":"Bouncing",
+            "skulls":[
+                "sputnik",
+                "bandana"
+            ],
+            "mods":["30tick","godmode","bottomlessClip"]
+        },
+        {
+            "name":"Jumping",
+            "skulls":[
+                "bandana"
+            ],
+            "mods":["godmode","bottomlessClip"]
+        }
+        
+    ]
+}
