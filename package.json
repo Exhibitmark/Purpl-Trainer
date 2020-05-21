@@ -5,18 +5,20 @@
   "main": "Purpl.js",
   "author": "Exhibit",
   "scripts": {
-    "build": "pkg Purpl.js --targets node10-win-x64",
-    "pack": "mkdir new | cp Purpl.exe offsets.json config.json ./new | cp -r ./taskDependents ./new"
+    "build": "pkg ./src/Purpl.js --targets node10-win-x64 --output ./new/Purpl.exe && npm run pack",
+    "pack": "node ./tools/pack.js"
   },
   "license": "ISC",
   "dependencies": {
     "bindings": "^1.5.0",
     "chalk": "^4.0.0",
-    "gamepad": "^1.6.0",
+    "gamepad": "^1.5.2",
     "iohook": "^0.6.5",
     "memoryjs": "^3.2.3",
     "pkg": "^4.4.0",
     "prompts": "^2.3.2"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "fs-extra": "^9.0.0"
+  }
 }
