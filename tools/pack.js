@@ -7,6 +7,6 @@ if (! fs.existsSync(outFolder)) {
     fs.mkdirSync(outFolder);
 }
 
-const files = ['Purpl.exe', 'offsets.json', 'config.json', 'taskDependents']
+const files = ['offsets.json', 'config.json', 'taskDependents']
 
 files.forEach(file => fs.copySync(path.resolve(file), path.resolve(outFolder, file)));

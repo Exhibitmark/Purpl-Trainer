@@ -5,8 +5,8 @@
   "main": "Purpl.js",
   "author": "Exhibit",
   "scripts": {
-    "build": "pkg Purpl.js --targets node10-win-x64 && npm run pack",
-    "pack": "node .\\tools\\pack.js"
+    "build": "pkg ./src/Purpl.js --targets node10-win-x64 --output ./new/Purpl.exe && npm run pack",
+    "pack": "node ./tools/pack.js"
   },
   "license": "ISC",
   "dependencies": {
