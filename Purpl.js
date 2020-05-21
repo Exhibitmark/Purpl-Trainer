@@ -1,3 +1,5 @@
+const DEBUG = false;
+
 const fs = require('fs');
 const ioHook = require('iohook');
 const prompts = require('prompts');
@@ -8,9 +10,9 @@ const settings = readFile('./config.json');
 const {controller, keyboard} = settings;
 const config = readFile('./offsets.json');
 const ea = []
+let purplState = {};
 let proc;
 const packs = generatePacks()
-const purplCommands = generatePurplCommands()
 const globals = generateGlobals()
 
 //Object of keys
@@ -222,23 +224,32 @@ const skullEnums = {
 startup(commandStart)
 
 function generatePurplCommands() {
-    let purplCommands = [{
-        title: chalk.bold('Packs'),
-        value: {"type":"packs","name":""}
-    },{
-        title:chalk.bold('Go Back'),
-        value:"back"
-    }]
+    let purplCommands = [
+        // {
+        //     title: chalk.bold('Packs'),
+        //     value: {"type":"packs","name":""}
+        // },
+        {
+            title:chalk.bold('Go Back'),
+            value:"back"
+        }
+    ]
+
+    updateState();
 
     config.purpl.forEach(function(e){
         const option = {
-            title: chalk.bold(e.description),
-            value: {"type":"mod","name":e.name}
+            title: getTitle(e),
+            value: {"type":"mod",...e}
         }
         ea.push(e)
         purplCommands.unshift(option)
     });
     return purplCommands
+}
+
+function getTitle(entry) {
+    return `${chalk.bold(entry.description)} ${purplState[entry.name] === entry.value.toLowerCase() ? chalk.green('Enabled') : chalk.red('Disabled')}`;
 }
 
 function generateGlobals() {
@@ -266,7 +277,7 @@ function generatePacks() {
     config.packs.forEach(function(e){
         const option = {
             title: chalk.bold(e.name),
-            value: {"type":"pack","name":e.name}
+            value: {"type":"pack",...e}
         }
         purplPacks.unshift(option)
     });
@@ -290,15 +301,79 @@ function renderer(items) {
                 renderer(packs)
                 break;
             case 'mod':
-                startup(skulls)
+                if (r.dataType === 'pointer') {
+                    if (! r.offsets) {
+                        console.error('Data type pointer must have an array of offsets');
+                    }
+                    let pointer = ea['dll'].modBaseAddr + parseInt(r.address, 16); 
+                    debug({pointer: Number(pointer).toString(16)})
+                    const offsetsCopy = [...r.offsets];
+                    const finalOffset = offsetsCopy.pop();
+                    const offsets = [...offsetsCopy.reverse(), 0];
+                    while (offsets.length > 0) {
+                        const currentOffset = offsets.pop();
+                        pointer = parseInt(mem.readBuffer(proc.handle, pointer + currentOffset, 8).toString('hex').match(/../g).reverse().join(""), 16)
+                        debug({pointer: Number(pointer).toString(16), buffer: mem.readBuffer(proc.handle, pointer, 6)})
+                    }
+                    // acc[r.name] = mem.readBuffer(proc.handle, pointer + finalOffset, 6).toString('hex');
+                    let buffer;
+                    if (purplState[r.name] === r.reset.toLowerCase()) {
+                        buffer = Buffer.from(r.value, 'hex');
+                    } else if (purplState[r.name] === r.value.toLowerCase()) {
+                        buffer = Buffer.from(r.reset, 'hex');
+                    } else {
+                        console.error(`Expected value at ${r.address} to be ${r.value} or ${r.reset}. Instead found ${purplState[r.name]}`);
+                        console.clear();
+                        renderer(generatePurplCommands());
+                        break;
+                    }
+                    debug(buffer);
+                    mem.writeBuffer(proc.handle, pointer + finalOffset, buffer);
+                    console.clear();
+                    renderer(generatePurplCommands());
+                    break;
+                }
+                debug('Whats up?')
+                if (purplState[r.name] === r.reset.toLowerCase()) {
+                    writeMem(r.address, parseInt(r.value, 16), r.dataType);
+                } else if (purplState[r.name] === r.value.toLowerCase()) {
+                    writeMem(r.address, parseInt(r.reset, 16), r.dataType);
+                } else {
+                    console.error(`Expected value at ${r.address} to be ${r.value} or ${r.reset}. Instead found ${purplState[r.name]}`);
+                }
+                renderer(generatePurplCommands());
                 break;
             case 'pack':
-                renderer(purplCommands)
+            renderer(generatePurplCommands());
             case 'back':
-                renderer(purplCommands)
+            renderer(generatePurplCommands());
         }
     })();
-    
+}
+
+function updateState() {
+    purplState = config.purpl.reduce(function(acc, r) {
+        if (r.dataType === 'pointer') {
+            if (! r.offsets) {
+                console.error('Data type pointer must have an array of offsets');
+            }
+            let pointer = ea['dll'].modBaseAddr + parseInt(r.address, 16); 
+            debug({pointer: Number(pointer).toString(16)})
+            const offsetsCopy = [...r.offsets];
+            const finalOffset = offsetsCopy.pop();
+            const offsets = [...offsetsCopy.reverse(), 0];
+            while (offsets.length > 0) {
+                const currentOffset = offsets.pop();
+                pointer = parseInt(mem.readBuffer(proc.handle, pointer + currentOffset, 8).toString('hex').match(/../g).reverse().join(""), 16)
+                debug({pointer: Number(pointer).toString(16), buffer: mem.readBuffer(proc.handle, pointer, 6)})
+            }
+            debug({pointer: Number(pointer + finalOffset).toString(16), buffer: mem.readBuffer(proc.handle, pointer + finalOffset, 6)})
+            acc[r.name] = mem.readBuffer(proc.handle, pointer + finalOffset, 6).toString('hex');
+            return acc;
+        }
+        acc[r.name] = Number(readMem(r.address, r.dataType)).toString(16);
+        return acc;
+    }, {})
 }
 
 function setup() {
@@ -455,11 +530,15 @@ function purplToggles() {
 function startPurpl() {
     if(proc == undefined){
         proc = mem.openProcess("MCC-Win64-Shipping.exe");
+        if (! proc) {
+            proc = mem.openProcess("MCC-Win64-Shipping-WinStore.exe");
+        }
         ea['dll'] = getModuleBase()
+        debug(ea['dll'].modBaseAddr);
     }
     inputInit()
-    renderer(purplCommands)
-   // gamepadInit() 
+    renderer(generatePurplCommands());
+    // gamepadInit() 
 }
 
 function skulls() {
@@ -538,11 +617,11 @@ function getModuleBase() {
 }
 
 function writeMem(address, value, type) {
-    mem.writeMemory(proc.handle, ea['dll'].modBaseAddr + address, value , type);
+    mem.writeMemory(proc.handle, ea['dll'].modBaseAddr + parseInt(address, 16), value , type);
 }
 
 function readMem(address, type) {
-    return mem.readMemory(proc.handle, ea['dll'].modBaseAddr + address, type);
+    return mem.readMemory(proc.handle, ea['dll'].modBaseAddr + parseInt(address, 16), type);
 }
 
 function writeFile(file,content) {  
@@ -610,4 +689,10 @@ function setCheckpointBinding(input,e) {
             startup(commandStart)
         }
     })();
+}
+
+function debug(...args) {
+    if (DEBUG) {
+        debug(...args);
+    }
 }
