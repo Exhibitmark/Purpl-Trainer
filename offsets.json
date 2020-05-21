@@ -94,5 +94,57 @@
             "mods":["godmode","bottomlessClip"]
         }
         
+    ],
+    "offsets": [
+        {
+            "name":"hud",
+            "description":"HUD Toggle",
+            "address":"C79E31",
+            "dataType": "byte",
+            "reset":"0",
+            "value":"1"
+        },
+        {
+            "name":"30tick",
+            "description":"30 Tick",
+            "address":"19A2F40",
+            "dataType": "pointer",
+            "pointerLength": 8,
+            "offsets": [2],
+            "reset":"3C008988883C",
+            "value":"1E008988083D"
+        },
+        {
+            "name":"infiniteGrenades",
+            "description":"Infinite Grenades",
+            "address":"DA2A7F",
+            "dataType": "byte",
+            "reset":"0",
+            "value":"5A"
+        },
+        {
+            "name":"godmode",
+            "description":"Permanent Shields",
+            "address":"D75C47",
+            "dataType": "short",
+            "reset":"F0",
+            "value":"150"
+        },
+        {
+            "name":"bottomlessClip",
+            "description":"Bottomless Clip",
+            "address":"D4A5B6",
+            "dataType": "byte",
+            "reset":"84",
+            "value":"85"
+        },
+        {
+            "name":"wireframe",
+            "description":"Wireframe Mode",
+            "address":"12B2574",
+            "dataType": "byte",
+            "reset":"0",
+            "value":"1"
+        }
     ]
 }

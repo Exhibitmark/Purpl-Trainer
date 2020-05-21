@@ -3,7 +3,6 @@ const DEBUG = false;
 const fs = require('fs');
 const ioHook = require('iohook');
 const prompts = require('prompts');
-//const gamepad = require("gamepad");
 const chalk = require("chalk");
 const mem = require('bindings')('../taskDependents/worker.node')
 const settings = readFile('./config.json');
@@ -325,14 +324,16 @@ function purplToggles() {
 
 function startPurpl() {
     if(proc == undefined){
-        proc = mem.openProcess("MCC-Win64-Shipping.exe");
-        if (! proc) {
+        try {
             proc = mem.openProcess("MCC-Win64-Shipping-WinStore.exe");
+        } catch(ex) {
+            proc = mem.openProcess("MCC-Win64-Shipping.exe");
         }
         ea['dll'] = getModuleBase()
         debug(ea['dll'].modBaseAddr);
     }
-    inputInit()
+    inputInit();
+    // gamepadInit();
     renderer(generatePurplCommands());
     // gamepadInit() 
 }
@@ -384,29 +385,32 @@ function registerButton(k) {
 }
 
 function inputInit() {
-    ioHook.start()
+    ioHook.start();
     ioHook.on('keydown', event => {
         if(event.rawcode == keyboard.checkpoint){
-            writeMem(ea["checkpoint"], 3, "byte")
+            console.log(chalk.gray('Setting Checkpoint'))
+            writeMem(ea["checkpoint"], 1, "byte")
         }
         else if(event.rawcode == keyboard.revert){
+            console.log(chalk.grey('Reverting to Checkpoint'))
             writeMem(ea["revert"], 1, "byte")
         }
     });
 } 
 
-function gamepadInit() {
-    gamepad.init()
-    setInterval(gamepad.processEvents, 100);
-    gamepad.on("down", function (id, num) {
-        if(num == controller.checkpoint){
-            writeMem(ea["checkpoint"], 3, "byte")
-        }
-        else if(num == controller.revert){
-            writeMem(ea["revert"], 1, "byte")
-        }
-    });
-}
+// function gamepadInit() {
+//     gamepad.init()
+//     setInterval(gamepad.processEvents, 100);
+//     gamepad.on("down", function (id, num) {
+//         debug(num);
+//         if(num == controller.checkpoint){
+//             writeMem(ea["checkpoint"], 1, "byte")
+//         }
+//         else if(num == controller.revert){
+//             writeMem(ea["revert"], 1, "byte")
+//         }
+//     });
+// }
 
 function getModuleBase() {
     return mem.findModule('halo2.dll', proc.th32ProcessID);
@@ -489,6 +493,6 @@ function setCheckpointBinding(input,e) {
 
 function debug(...args) {
     if (DEBUG) {
-        debug(...args);
+        console.debug(...args);
     }
 }

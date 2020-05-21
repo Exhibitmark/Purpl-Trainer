@@ -1,11 +1,11 @@
 {
   "name": "purplTrainer",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "",
   "main": "Purpl.js",
   "author": "Exhibit",
   "scripts": {
-    "build": "pkg ./src/Purpl.js --targets node10-win-x64 --output ./new/Purpl.exe && npm run pack",
+    "build": "pkg ./src/index.js --targets node10-win-x64 --output ./new/Purpl.exe && npm run pack",
     "pack": "node ./tools/pack.js"
   },
   "license": "ISC",
@@ -19,6 +19,7 @@
     "prompts": "^2.3.2"
   },
   "devDependencies": {
+    "archiver": "^4.0.1",
     "fs-extra": "^9.0.0"
   }
 }

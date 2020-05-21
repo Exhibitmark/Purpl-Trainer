@@ -1,1 +1,14 @@
-{"controller":{"checkpoint":12,"revert":0},"keyboard":{"checkpoint":119,"revert":192}}
+{
+    "controller": {
+        "checkpoint":12,
+        "revert":0
+    },
+    "keyboard": {
+        "hud": 116,
+        "infiniteGrenades": 117,
+        "godmode": 118,
+        "bottomlessClip": 119,
+        "wireframe": 120,
+        "30tick": 121
+    }
+}
