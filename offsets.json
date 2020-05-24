@@ -99,7 +99,7 @@
         {
             "name":"hud",
             "description":"HUD Toggle",
-            "address":"C79E31",
+            "address":"19A1586",
             "dataType": "byte",
             "reset":"0",
             "value":"1"
@@ -115,6 +115,7 @@
             "value":"1E008988083D"
         },
         {
+            "disabled": true,
             "name":"infiniteGrenades",
             "description":"Infinite Grenades",
             "address":"DA2A7F",
@@ -123,6 +124,7 @@
             "value":"5A"
         },
         {
+            "disabled": true,
             "name":"godmode",
             "description":"Permanent Shields",
             "address":"D75C47",
@@ -131,6 +133,7 @@
             "value":"150"
         },
         {
+            "disabled": true,
             "name":"bottomlessClip",
             "description":"Bottomless Clip",
             "address":"D4A5B6",
@@ -145,6 +148,24 @@
             "dataType": "byte",
             "reset":"0",
             "value":"1"
+        }
+    ],
+    "checkpoint": [
+        {
+            "name":"checkpoint",
+            "description":"Checkpoint",
+            "address":"1297AB8",
+            "dataType": "byte",
+            "reset":"00",
+            "value":"03"
+        },
+        {
+            "name":"revert",
+            "description":"Revert",
+            "address":"13164CD",
+            "dataType": "byte",
+            "reset":"00",
+            "value":"01"
         }
     ]
 }

@@ -3,8 +3,8 @@ var EventEmitter = require('events');
 
 class MyEmitter extends EventEmitter {
     emit(type, ...args) {
-        super.emit('*', type, ...args);
-        return super.emit(type, ...args) || super.emit('', ...args);
+        
+        return super.emit('*', type, ...args);
     }
 
     add(emitter) {

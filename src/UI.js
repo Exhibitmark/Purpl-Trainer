@@ -4,8 +4,10 @@ const chalk = require("chalk");
 const prompts = require('prompts');
 const EventEmitter = require('./EventEmitter');
 const { readFile } = require('./file');
+const { mappings } = require('./constants');
 
 const { offsets } = readFile('./offsets.json');
+const { keyboard } = readFile('./config.json');
 
 class UI {
     constructor(stateEmitter) {
@@ -27,6 +29,7 @@ class UI {
     }
 
     setState(purplState) {
+        console.clear();
         this.purplState = purplState;
     }
 
@@ -74,12 +77,13 @@ class UI {
 
     getTitle(entry) {
         const enabled = this.purplState[entry.name] === entry.value.toLowerCase() || false;
-
-        return `${entry.description} ${enabled ? chalk.green('enabled') : chalk.red('disabled')}`;
+        const keyCode = keyboard[entry.name];
+        const key = mappings[keyCode];
+        return `${key ? `[${key}] ` : ''}${entry.description} ${enabled ? chalk.green('enabled') : chalk.red('disabled')}`;
     }
 
     async loadPurplMenu() {
-        const purplChoices = offsets.map(o => ({
+        const purplChoices = offsets.filter(o => ! o.disabled).map(o => ({
             title: this.getTitle(o),
             value: o
         }))
@@ -96,7 +100,7 @@ class UI {
             }
         );
         const statePromise = new Promise((resolve) => {
-            this.stateEmitter.on('*', () => {
+            this.stateEmitter.once('*', () => {
                 resolve(false);
             });
         });

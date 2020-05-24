@@ -1,8 +1,7 @@
 const EventEmitter = require('./EventEmitter');
 const ioHook = require('iohook');
 const { readFile } = require('./file');
-const settings = readFile('./config.json');
-const { keyboard } = settings;
+const { keyboard } = readFile('./config.json');
 
 class IoHook {
     constructor() {

@@ -1,6 +1,6 @@
 {
   "name": "purplTrainer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "",
   "main": "Purpl.js",
   "author": "Exhibit",
@@ -12,7 +12,6 @@
   "dependencies": {
     "bindings": "^1.5.0",
     "chalk": "^4.0.0",
-    "gamepad": "^1.5.2",
     "iohook": "^0.6.5",
     "memoryjs": "^3.2.3",
     "pkg": "^4.4.0",
